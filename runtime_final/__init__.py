@@ -105,8 +105,15 @@ def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
 def get_final_methods(target: type) -> Tuple[Callable[..., Any], ...]:
     """Gets the final methods of given class.
     
-    Returns the tuple of function objects that are marked
-    as final in the given class.
+    Parameters
+    ----------
+    target: :class:`type`
+        The class to get final methods for.
+    
+    Returns
+    -------
+    :class:`tuple`
+        The tuple of function objects that are marked as final.
     """
     if not hasattr(target, "__runtime_final_methods__"):
         return ()
@@ -114,7 +121,17 @@ def get_final_methods(target: type) -> Tuple[Callable[..., Any], ...]:
 
 
 def is_final(target: TargetType) -> bool:
-    """Indicates whether a class or function is declared as final."""
+    """Indicates whether a class or function is declared as final.
+    
+    Parameters
+    ----------
+    target:
+        The class or method to check for.
+    
+    Returns
+    -------
+    :class:`bool`
+    """
     return hasattr(target, "__runtime_is_final__")
 
 
@@ -147,11 +164,7 @@ class _Final:
 
 if TYPE_CHECKING:
     def final(target: T) -> T:
-        """A decorator that declares a class or method as final.
-    
-        For more information about how this works, Consider
-        seeing this module's docstring.
-        """
+        """A decorator that declares a class or method as final."""
         ...
 else:
     def final(target) -> None:
