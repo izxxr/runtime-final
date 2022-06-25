@@ -52,7 +52,7 @@ can easily combine this module with typing module::
 `typing.TYPE_CHECKING` is always False at runtime while is True
 for type checkers.
 
-For more details, see: https://github.com/nerdguyahmad/runtime-final
+For more details, see: https://github.com/nerdguyahmad/runtime-final/wiki
 
 Copyright (C) Izhar Ahmad 2022-2023 - Licensed under MIT.
 """
