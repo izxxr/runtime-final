@@ -49,4 +49,4 @@ class AnotherUser(User):
 ```
 
 ## Documentation
-For more details, see the [documentation](https://github.com/nerdguyahmad/runtime-final/wiki)
+For more details, see the [documentation](https://runtime-final.readthedocs.io)

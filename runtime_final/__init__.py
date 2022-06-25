@@ -14,47 +14,9 @@ such:
 - Classes decorated with @final cannot be subclassed.
 - Methods decorated with @final cannot be overriden in subclasses.
 
-Example usage (classes)::
+For more details, see: https://runtime-final.readthedocs.io
 
-    from runtime_final import final
-
-    @final
-    class Foo:
-        ...
-    
-    class Bar(Foo):  # Raises RuntimeError
-        ...
-
-Example usage (methods)::
-
-    from runtime_final import final
-
-    class User:
-        @final
-        def edit(self):
-            ...
-    
-    class AnotherUser(User):
-        def edit(self):  # Raises RuntimeError
-            ...
-
-This module is also compatible with the `final` decorator
-provided by the typing module from standard library. You
-can easily combine this module with typing module::
-
-    from typing import TYPE_CHECKING
-
-    if TYPE_CHECKING:
-        from typing import final
-    else:
-        from runtime_final import final
-
-`typing.TYPE_CHECKING` is always False at runtime while is True
-for type checkers.
-
-For more details, see: https://github.com/nerdguyahmad/runtime-final/wiki
-
-Copyright (C) Izhar Ahmad 2022-2023 - Licensed under MIT.
+Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT.
 """
 
 from __future__ import annotations
@@ -71,12 +33,18 @@ from typing import (
 )
 import inspect
 
-
 __all__ = (
     "final",
     "get_final_methods",
     "is_final",
+    "__version__",
+    "__author__",
+    "__copyright__",
 )
+
+__version__ = "1.0.0"
+__author__ = "I. Ahmad (nerdguyahmad)"
+__copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 
 
 TargetType = Union[Callable[..., Any], type]
@@ -163,9 +131,59 @@ class _Final:
 
 
 if TYPE_CHECKING:
+    # Type checkers will ignore the else clause and will take
+    # this definition in account so the docstring here is
+    # just to aid the IDE users.
     def final(target: T) -> T:
         """A decorator that declares a class or method as final."""
         ...
 else:
     def final(target) -> None:
+        """A decorator that declares a class or method as final.
+        
+        A class declared as final with this decorator cannot
+        be subclassed by other classes. Similarly, when methods
+        of a class are declared as final, The subclasses cannot
+        override them.
+
+        Trying to subclass final classes or overriding final
+        methods will raise :exc:`RuntimeError`.
+
+        Here is an example of final classes::
+
+            @final
+            class User:
+                pass
+            
+            # The following line will raise RuntimeError
+            class SpecialUser(User):
+                pass
+        
+        And final methods::
+
+            class User:
+                @final
+                def delete(self):
+                    pass
+            
+            class SpecialUser(User):
+                # The following line will raise RuntimeError
+                def delete(self):
+                    pass
+        
+        This decorator is also fully compatible with the :func:`typing.final`.
+        In applications where type checkers need to understand the usage of
+        final decorator, the ``typing.TYPE_CHECKING`` constant can be used::
+
+            from typing import TYPE_CHECKING
+
+            if TYPE_CHECKING:
+                # Type checkers will consider this clause but
+                # this will not execute at runtime.
+                from typing import final
+            else:
+                # Type checkers will ignore this clause but
+                # this is always executed at runtime.
+                from runtime_final import final
+        """
         return _Final(target)
