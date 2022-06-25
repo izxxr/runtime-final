@@ -58,7 +58,7 @@ def _forbid_subclassing(cls: Any) -> NoReturn:
 
 @classmethod
 def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
-    final_methods: Set[str] = getattr(cls, "__runtime_final_methods__", set[str]())
+    final_methods: Set[str] = getattr(cls, "__runtime_final_methods__", set())  # type: ignore
     overrides = vars(cls)
 
     for name in final_methods:
