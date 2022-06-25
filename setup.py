@@ -3,7 +3,7 @@ from setuptools import setup
 with open("README.MD", "r", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 GITHUB = "https://github.com/nerdguyahmad/runtime-final"
 DOCUMENTATION = "https://github.com/nerdguyahmad/runtime-final/wiki"
 LICENSE = "MIT"

@@ -22,7 +22,7 @@ copyright = '2022, I. Ahmad (nerdguyahmad)'
 author = 'I. Ahmad (nerdguyahmad)'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------

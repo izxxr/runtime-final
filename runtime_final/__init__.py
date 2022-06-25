@@ -42,7 +42,7 @@ __all__ = (
     "__copyright__",
 )
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "I. Ahmad (nerdguyahmad)"
 __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 
