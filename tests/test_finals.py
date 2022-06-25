@@ -1,4 +1,4 @@
-from runtime_final import final, get_final_methods, is_final
+from runtime_final import final
 import unittest
 
 
