@@ -60,12 +60,12 @@ def _forbid_subclassing(cls: Any) -> NoReturn:
 def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
     final_methods: Set[str] = getattr(cls, "__runtime_final_methods__", set[str]())
     overrides = vars(cls)
-    old_init_subclass = getattr(cls, "__runtime_old_init_subclass__", None)
 
     for name in final_methods:
         if name in overrides:
             raise RuntimeError(f"Cannot override {name!r} in class {cls.__name__!r}")
     
+    old_init_subclass = getattr(cls, "__runtime_old_init_subclass__", None)
     if old_init_subclass:
         old_init_subclass()
 
@@ -107,26 +107,30 @@ class _Final:
     # Most type ignores in this class are because of runtime assignments
 
     def __new__(cls, target: TargetType) -> Any:
+        target.__runtime_is_final__ = True  # type: ignore
+
         if inspect.isclass(target):
+            # Unlike methods, classes don't need any extra working
+            # so no need to call super().__new__()
             target.__init_subclass__ = _forbid_subclassing  # type: ignore
-            target.__runtime_is_final__ = True  # type: ignore
             return target
-            
+        
         return super().__new__(cls)
     
     def __init__(self, target: TargetType) -> None:
         self.target = target
-        target.__runtime_is_final__ = True  # type: ignore
 
-    def __set_name__(self, owner: type, name: str) -> None:
+    def __set_name__(self, owner: TargetType, name: str) -> None:
         target = self.target
+
         if hasattr(owner, "__runtime_final_methods__"):
             owner.__runtime_final_methods__.add(target.__name__)  # type: ignore
         else:
             owner.__runtime_final_methods__ = {target.__name__}  # type: ignore
-        
+
         owner.__runtime_old_init_subclass__ = owner.__init_subclass__  # type: ignore
         owner.__init_subclass__ = _forbid_overriding_finals  # type: ignore
+
         setattr(owner, name, target)
 
 
