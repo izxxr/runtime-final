@@ -119,11 +119,6 @@ def is_final(target: TargetType) -> bool:
 
 
 class _Final:
-    """A decorator that declares a class or method as final.
-    
-    For more information about how this works, Consider
-    seeing this module's docstring.
-    """
     # Most type ignores in this class are because of runtime assignments
 
     def __new__(cls, target: TargetType) -> Any:
@@ -152,6 +147,11 @@ class _Final:
 
 if TYPE_CHECKING:
     def final(target: T) -> T:
+        """A decorator that declares a class or method as final.
+    
+        For more information about how this works, Consider
+        seeing this module's docstring.
+        """
         ...
 else:
     def final(target) -> None:
