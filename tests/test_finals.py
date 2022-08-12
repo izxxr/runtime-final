@@ -26,7 +26,7 @@ class ClassWithFinals:
 class TestFinals(unittest.TestCase):
     def test_finals(self) -> None:
         with self.assertRaises(RuntimeError):
-            class Subclass(ClassWithFinals):
+            class __SubclassOverrides__(ClassWithFinals):
                 def foo(self) -> None:
                     pass
 
@@ -34,7 +34,7 @@ class TestFinals(unittest.TestCase):
                     pass
 
         with self.assertRaises(RuntimeError):
-            class Subclass(FinalClass):
+            class __Subclass__(FinalClass):
                 pass
 
 

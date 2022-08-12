@@ -47,8 +47,7 @@ __author__ = "I. Ahmad (nerdguyahmad)"
 __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 
 
-TargetType = Union[Callable[..., Any], type]
-T = TypeVar("T", bound=TargetType)
+T = TypeVar("T")
 
 
 @classmethod
@@ -88,7 +87,7 @@ def get_final_methods(target: type) -> Tuple[Callable[..., Any], ...]:
     return tuple((getattr(target, name) for name in target.__runtime_final_methods__))  # type: ignore
 
 
-def is_final(target: TargetType) -> bool:
+def is_final(target: Any) -> bool:
     """Indicates whether a class or function is declared as final.
 
     Parameters
@@ -106,7 +105,7 @@ def is_final(target: TargetType) -> bool:
 class _Final:
     # Most type ignores in this class are because of runtime assignments
 
-    def __new__(cls, target: TargetType) -> Any:
+    def __new__(cls, target: Any) -> Any:
         target.__runtime_is_final__ = True  # type: ignore
 
         if inspect.isclass(target):
@@ -117,10 +116,10 @@ class _Final:
 
         return super().__new__(cls)
 
-    def __init__(self, target: TargetType) -> None:
+    def __init__(self, target: Any) -> None:
         self.target = target
 
-    def __set_name__(self, owner: TargetType, name: str) -> None:
+    def __set_name__(self, owner: Any, name: str) -> None:
         target = self.target
 
         if hasattr(owner, "__runtime_final_methods__"):
