@@ -64,7 +64,7 @@ def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
     for name in final_methods:
         if name in overrides:
             raise RuntimeError(f"Cannot override {name!r} in class {cls.__name__!r}")
-    
+
     old_init_subclass = getattr(cls, "__runtime_old_init_subclass__", None)
     if old_init_subclass:
         old_init_subclass()
@@ -72,12 +72,12 @@ def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
 
 def get_final_methods(target: type) -> Tuple[Callable[..., Any], ...]:
     """Gets the final methods of given class.
-    
+
     Parameters
     ----------
     target: :class:`type`
         The class to get final methods for.
-    
+
     Returns
     -------
     :class:`tuple`
@@ -90,12 +90,12 @@ def get_final_methods(target: type) -> Tuple[Callable[..., Any], ...]:
 
 def is_final(target: TargetType) -> bool:
     """Indicates whether a class or function is declared as final.
-    
+
     Parameters
     ----------
     target:
         The class or method to check for.
-    
+
     Returns
     -------
     :class:`bool`
@@ -114,9 +114,9 @@ class _Final:
             # so no need to call super().__new__()
             target.__init_subclass__ = _forbid_subclassing  # type: ignore
             return target
-        
+
         return super().__new__(cls)
-    
+
     def __init__(self, target: TargetType) -> None:
         self.target = target
 
@@ -144,7 +144,7 @@ if TYPE_CHECKING:
 else:
     def final(target) -> None:
         """A decorator that declares a class or method as final.
-        
+
         A class declared as final with this decorator cannot
         be subclassed by other classes. Similarly, when methods
         of a class are declared as final, The subclasses cannot
@@ -158,23 +158,23 @@ else:
             @final
             class User:
                 pass
-            
+
             # The following line will raise RuntimeError
             class SpecialUser(User):
                 pass
-        
+
         And final methods::
 
             class User:
                 @final
                 def delete(self):
                     pass
-            
+
             class SpecialUser(User):
                 # The following line will raise RuntimeError
                 def delete(self):
                     pass
-        
+
         This decorator is also fully compatible with the :func:`typing.final`.
         In applications where type checkers need to understand the usage of
         final decorator, the ``typing.TYPE_CHECKING`` constant can be used::
