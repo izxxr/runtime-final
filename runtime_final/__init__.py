@@ -114,8 +114,6 @@ def is_final(target: Any) -> bool:
 
 
 class _Final:
-    # Most type ignores in this class are because of runtime assignments
-
     if TYPE_CHECKING:
         __original_target__: Any
         __target__: Any
@@ -123,12 +121,12 @@ class _Final:
     def __new__(cls, target: Any) -> Any:
         cls.__original_target__ = target
         cls.__target__ = _resolve_target(target)
-        cls.__target__.__runtime_is_final__ = True  # type: ignore
+        cls.__target__.__runtime_is_final__ = True
 
         if inspect.isclass(target):
             # Unlike methods, classes don't need any extra working
             # so no need to call super().__new__()
-            cls.__target__.__init_subclass__ = _forbid_subclassing  # type: ignore
+            cls.__target__.__init_subclass__ = _forbid_subclassing
             return target
 
         return super().__new__(cls)
