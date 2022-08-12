@@ -187,6 +187,26 @@ else:
                 def delete(self):
                     pass
 
+        .. note::
+
+            When using this decorator with special attributes such as :func:`staticmethod`,
+            :func:`classmethod` and :func:`property`, This decorator should be placed
+            *above* the relevant decorator for that special attribute.
+
+            E.g::
+
+                # Correct:
+                @final
+                @property
+                def foo(self):
+                    ...
+
+                # Wrong:
+                @property
+                @final
+                def foo(self):
+                    ...
+
         This decorator is also fully compatible with the :func:`typing.final`.
         In applications where type checkers need to understand the usage of
         final decorator, the ``typing.TYPE_CHECKING`` constant can be used::
