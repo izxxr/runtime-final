@@ -50,6 +50,17 @@ __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 T = TypeVar("T")
 
 
+def _resolve_target(target: Any) -> Any:
+    # This would fail for custom dynamic attributes but there
+    # is no way to resolve the underlying function for those
+    # attributes; so can't really do anything about it
+    if isinstance(target, property):
+        return target.fget
+    if isinstance(target, (staticmethod, classmethod)):
+        return target.__func__
+    return target
+
+
 @classmethod
 def _forbid_subclassing(cls: Any) -> NoReturn:
     raise RuntimeError(f"Cannot subclass the final class {cls.__name__!r}")
@@ -105,43 +116,47 @@ def is_final(target: Any) -> bool:
 class _Final:
     # Most type ignores in this class are because of runtime assignments
 
+    if TYPE_CHECKING:
+        __original_target__: Any
+        __target__: Any
+
     def __new__(cls, target: Any) -> Any:
-        target.__runtime_is_final__ = True  # type: ignore
+        cls.__original_target__ = target
+        cls.__target__ = _resolve_target(target)
+        cls.__target__.__runtime_is_final__ = True  # type: ignore
 
         if inspect.isclass(target):
             # Unlike methods, classes don't need any extra working
             # so no need to call super().__new__()
-            target.__init_subclass__ = _forbid_subclassing  # type: ignore
+            cls.__target__.__init_subclass__ = _forbid_subclassing  # type: ignore
             return target
 
         return super().__new__(cls)
 
     def __init__(self, target: Any) -> None:
-        self.target = target
+        # __target__ is set during __new__() so we don't have
+        # to do anything here. This constructor primarily exists to
+        # avoid errors
+        pass
 
     def __set_name__(self, owner: Any, name: str) -> None:
-        target = self.target
-
+        cls = self.__class__
         if hasattr(owner, "__runtime_final_methods__"):
-            owner.__runtime_final_methods__.add(target.__name__)  # type: ignore
+            owner.__runtime_final_methods__.add(cls.__target__.__name__)
         else:
-            owner.__runtime_final_methods__ = {target.__name__}  # type: ignore
+            owner.__runtime_final_methods__ = {cls.__target__.__name__}
 
-        owner.__runtime_old_init_subclass__ = owner.__init_subclass__  # type: ignore
-        owner.__init_subclass__ = _forbid_overriding_finals  # type: ignore
-
-        setattr(owner, name, target)
+        owner.__runtime_old_init_subclass__ = owner.__init_subclass__
+        owner.__init_subclass__ = _forbid_overriding_finals
+        setattr(owner, name, cls.__original_target__)
 
 
 if TYPE_CHECKING:
-    # Type checkers will ignore the else clause and will take
-    # this definition in account so the docstring here is
-    # just to aid the IDE users.
     def final(target: T) -> T:
         """A decorator that declares a class or method as final."""
         ...
 else:
-    def final(target) -> None:
+    def final(target) -> _Final:
         """A decorator that declares a class or method as final.
 
         A class declared as final with this decorator cannot
