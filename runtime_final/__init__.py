@@ -140,9 +140,9 @@ class _Final:
     def __set_name__(self, owner: Any, name: str) -> None:
         cls = self.__class__
         if hasattr(owner, "__runtime_final_methods__"):
-            owner.__runtime_final_methods__.add(cls.__target__.__name__)
+            owner.__runtime_final_methods__.add(name)
         else:
-            owner.__runtime_final_methods__ = {cls.__target__.__name__}
+            owner.__runtime_final_methods__ = {name}
 
         owner.__runtime_old_init_subclass__ = owner.__init_subclass__
         owner.__init_subclass__ = _forbid_overriding_finals
