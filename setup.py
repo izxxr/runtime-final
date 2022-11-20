@@ -4,15 +4,15 @@ with open("README.MD", "r", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
 VERSION = "1.1.0"
-GITHUB = "https://github.com/nerdguyahmad/runtime-final"
-DOCUMENTATION = "https://github.com/nerdguyahmad/runtime-final/wiki"
+GITHUB = "https://github.com/izxxr/runtime-final"
+DOCUMENTATION = "https://github.com/izxxr/runtime-final/wiki"
 LICENSE = "MIT"
 PACKAGES = ["runtime_final"]
 
 
 setup(
     name="runtime-final",
-    author="nerdguyahmad",
+    author="izxxr",
     version=VERSION,
     license=LICENSE,
     url=GITHUB,
