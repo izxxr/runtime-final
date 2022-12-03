@@ -1,4 +1,4 @@
-from runtime_final import _tests
+import _tests
 import unittest
 
 
@@ -7,7 +7,6 @@ class TestFinals(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             class __Subclass__(_tests.FinalClass):
                 pass
-
 
     def test_finals_methods(self) -> None:
         with self.assertRaises(RuntimeError):
@@ -32,6 +31,7 @@ class TestFinals(unittest.TestCase):
                 @property
                 def foo_property(self) -> None:
                     pass
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
-from runtime_final import get_final_methods, is_final, _tests
+from runtime_final import get_final_methods, is_final
+import _tests
 import unittest
 
 
@@ -12,6 +13,7 @@ class TestHelpers(unittest.TestCase):
         assert is_final(_tests.ClassWithFinals.bar)
         assert not is_final(_tests.ClassWithFinals.foo_nofinal)
         assert not is_final(_tests.ClassWithFinals.bar_nofinal)
+
 
 if __name__ == "__main__":
     unittest.main()

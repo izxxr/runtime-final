@@ -1,4 +1,5 @@
-"""This module includes classes and methods used for tests.
+"""
+This module includes classes and methods used for tests.
 
 This is not meant to be used in general.
 """
@@ -6,11 +7,6 @@ This is not meant to be used in general.
 from __future__ import annotations
 
 from runtime_final import final
-
-__all__ = (
-    "FinalClass",
-    "ClassWithFinals",
-)
 
 
 @final
@@ -30,7 +26,7 @@ class ClassWithFinals:
     @final
     @property
     def foo_property(self) -> None:
-        pass
+        return None
 
     @final
     @classmethod
