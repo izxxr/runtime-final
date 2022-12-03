@@ -1,8 +1,4 @@
-"""
-This module includes classes and methods used for tests.
-
-This is not meant to be used in general.
-"""
+"""This module includes classes and methods used for tests."""
 
 from __future__ import annotations
 

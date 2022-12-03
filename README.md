@@ -1,4 +1,4 @@
-# runtime-final
+# amulet-runtime-final
 Declare final Python classes and methods at runtime.
 
 This module provides a decorator based interface to declare final
@@ -11,7 +11,7 @@ details on this topic.
 
 You can simply install this module from `pip`.
 ```
-python -m pip install runtime-final
+python -m pip install amulet-runtime-final
 ```
 
 ## Usage
@@ -47,6 +47,3 @@ class AnotherUser(User):
     def edit(self):  # Raises RuntimeError
         ...
 ```
-
-## Documentation
-For more details, see the [documentation](https://runtime-final.readthedocs.io)
