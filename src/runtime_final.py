@@ -27,7 +27,6 @@ from typing import (
     NoReturn,
     Set,
     Union,
-    TypeVar,
 )
 import inspect
 
@@ -41,9 +40,6 @@ __all__ = (
 __version__ = "1.1.0"
 __author__ = "I. Ahmad (izxxr)"
 __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
-
-
-T = TypeVar("T")
 
 
 def _resolve_target(target: Any) -> Any:
@@ -113,9 +109,7 @@ class _Final:
 
 
 if TYPE_CHECKING:
-    def final(target: T) -> T:
-        """A decorator that declares a class or method as final."""
-        ...
+    from typing import final
 else:
     def final(target) -> _Final:
         """A decorator that declares a class or method as final.
