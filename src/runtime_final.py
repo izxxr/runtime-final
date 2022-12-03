@@ -24,19 +24,15 @@ from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     NoReturn,
     Set,
     Union,
-    Tuple,
     TypeVar,
 )
 import inspect
 
 __all__ = (
     "final",
-    "get_final_methods",
-    "is_final",
     "__version__",
     "__author__",
     "__copyright__",
@@ -78,39 +74,6 @@ def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
     old_init_subclass = getattr(cls, "__runtime_old_init_subclass__", None)
     if old_init_subclass:
         old_init_subclass()
-
-
-def get_final_methods(target: type) -> Tuple[Callable[..., Any], ...]:
-    """Gets the final methods of given class.
-
-    Parameters
-    ----------
-    target: :class:`type`
-        The class to get final methods for.
-
-    Returns
-    -------
-    :class:`tuple`
-        The tuple of function objects that are marked as final.
-    """
-    if not hasattr(target, "__runtime_final_methods__"):
-        return ()
-    return tuple((getattr(target, name) for name in target.__runtime_final_methods__))  # type: ignore
-
-
-def is_final(target: Any) -> bool:
-    """Indicates whether a class or function is declared as final.
-
-    Parameters
-    ----------
-    target:
-        The class or method to check for.
-
-    Returns
-    -------
-    :class:`bool`
-    """
-    return hasattr(target, "__runtime_is_final__")
 
 
 class _Final:
