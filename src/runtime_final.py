@@ -17,6 +17,8 @@ such:
 For more details, see: https://runtime-final.readthedocs.io
 
 Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT.
+
+Refactored by gentlegiantJGC
 """
 
 from __future__ import annotations
@@ -24,81 +26,57 @@ from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
     Any,
-    NoReturn,
-    Set,
-    Union,
+    Dict,
 )
 import inspect
 
 __version__ = "1.1.0"
-__author__ = "I. Ahmad (izxxr)"
+__author__ = "gentlegiantJGC and I. Ahmad (izxxr)"
 __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 
 
-def _resolve_target(target: Any) -> Any:
-    # This would fail for custom dynamic attributes but there
-    # is no way to resolve the underlying function for those
-    # attributes; so can't really do anything about it
-    if isinstance(target, property):
-        return target.fget
-    if isinstance(target, (staticmethod, classmethod)):
-        return target.__func__
-    return target
-
-
 @classmethod
-def _forbid_subclassing(cls: Any) -> NoReturn:
+def _forbid_subclassing(cls):
     raise RuntimeError(f"Cannot subclass the final class {cls.__name__!r}")
 
 
-@classmethod
-def _forbid_overriding_finals(cls: Any) -> Union[NoReturn, None]:
-    final_methods: Set[str] = getattr(cls, "__runtime_final_methods__", set())  # type: ignore
-    overrides = vars(cls)
-
-    for name in final_methods:
-        if name in overrides:
-            raise RuntimeError(f"Cannot override {name!r} in class {cls.__name__!r}")
-
-    old_init_subclass = getattr(cls, "__runtime_old_init_subclass__", None)
-    if old_init_subclass:
-        old_init_subclass()
-
-
 class _Final:
-    if TYPE_CHECKING:
-        __original_target__: Any
-        __target__: Any
+    def __init__(self, target: Any):
+        self.__target = target
 
-    def __new__(cls, target: Any) -> Any:
-        cls.__original_target__ = target
-        cls.__target__ = _resolve_target(target)
-        cls.__target__.__runtime_is_final__ = True
+    def __set_name__(self, owner: Any, name: str):
+        """Called when the method is assigned its name in the class"""
+        if not hasattr(owner, "__runtime_final_methods__"):
+            # If the class has not already been patched, patch it.
+            # A dictionary mapping the name to the class it was finalised in. Dict[str, str]
+            owner.__runtime_final_methods__ = {}
+            old_init_subclass = owner.__init_subclass__
 
-        if inspect.isclass(target):
-            # Unlike methods, classes don't need any extra working
-            # so no need to call super().__new__()
-            cls.__target__.__init_subclass__ = _forbid_subclassing
-            return target
+            @classmethod
+            def _forbid_overriding_finals(cls):
+                final_methods: Dict[str, str] = cls.__runtime_final_methods__
+                overrides = vars(cls)
 
-        return super().__new__(cls)
+                for name in final_methods:
+                    # The class defines a method that was finalised in a different class
+                    if name in overrides and final_methods[name] != f"{cls.__module__}.{cls.__name__}":
+                        raise RuntimeError(f"Cannot override {name!r} in class {cls.__name__!r}")
 
-    def __init__(self, target: Any) -> None:
-        # __target__ is set during __new__() so we don't have
-        # to do anything here. This constructor primarily exists to
-        # avoid errors
-        pass
+                if old_init_subclass:
+                    old_init_subclass()
 
-    def __set_name__(self, owner: Any, name: str) -> None:
-        cls = self.__class__
-        if hasattr(owner, "__runtime_final_methods__"):
-            owner.__runtime_final_methods__.add(name)
-        else:
-            owner.__runtime_final_methods__ = {name}
+            owner.__init_subclass__ = _forbid_overriding_finals
 
-        owner.__runtime_old_init_subclass__ = owner.__init_subclass__
-        owner.__init_subclass__ = _forbid_overriding_finals
-        setattr(owner, name, cls.__original_target__)
+        if name in owner.__runtime_final_methods__:
+            # If the method has been finalised
+            raise RuntimeError(f"Cannot override {name!r} in class {owner.__name__!r}")
+        owner.__runtime_final_methods__[name] = f"{owner.__module__}.{owner.__name__}"
+        setattr(owner, name, self.__target)
+
+    def __call__(self, *args, **kwargs):
+        raise RuntimeError(
+            "The final decorator only works on methods assigned in a class."
+        )
 
 
 if TYPE_CHECKING:
@@ -172,4 +150,16 @@ else:
                 # this is always executed at runtime.
                 from runtime_final import final
         """
-        return _Final(target)
+        if inspect.isclass(target):
+            target.__final__ = True
+            target.__init_subclass__ = _forbid_subclassing
+            return target
+        elif inspect.isfunction(target):
+            target.__final__ = True
+            return _Final(target)
+        elif isinstance(target, (property, staticmethod, classmethod)):
+            return _Final(target)
+        else:
+            raise RuntimeError(
+                "The final decorator can only be used with classes and methods."
+            )
