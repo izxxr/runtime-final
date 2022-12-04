@@ -312,6 +312,41 @@ class TestFinals(unittest.TestCase):
                     def non_final_staticmethod(a):
                         return a
 
+    def test_property_setter(self):
+        class FinalProperty:
+            def __init__(self):
+                self.a = 5
+
+            @property
+            def test(self):
+                return self.a
+
+            @final
+            @test.setter
+            def test(self, a):
+                self.a = a
+
+        cls = FinalProperty()
+        self.assertEqual(5, cls.test)
+        cls.test = 10
+        self.assertEqual(10, cls.test)
+
+        with self.assertRaises(RuntimeError):
+            class FinalProperty2(FinalProperty):
+                @property
+                def test(self):
+                    return self.a
+
+        with self.assertRaises(RuntimeError):
+            class FinalProperty2(FinalProperty):
+                @property
+                def test(self):
+                    return self.a
+
+                @test.setter
+                def test(self, a):
+                    self.a = a
+
 
 if __name__ == "__main__":
     unittest.main()
