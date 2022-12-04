@@ -60,6 +60,7 @@ class TestFinals(unittest.TestCase):
     def test_final_subclass(self):
         """Test subclassing a final class"""
         with self.assertRaises(RuntimeError):
+
             class Subclass(FinalClass):
                 pass
 
@@ -106,28 +107,33 @@ class TestFinals(unittest.TestCase):
     def test_final_methods(self):
         # Without final decorator
         with self.subTest("Subclass constructor"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 def __init__(self, a):
                     self.a = a
 
         with self.subTest("Subclass method"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 def final_method(self, a):
                     return a
 
         with self.subTest("Subclass property"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @property
                 def final_property(self):
                     return 5
 
         with self.subTest("Subclass classmethod"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @classmethod
                 def final_classmethod(cls, a):
                     return a
 
         with self.subTest("Subclass staticmethod"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @staticmethod
                 def final_staticmethod(a):
@@ -135,18 +141,21 @@ class TestFinals(unittest.TestCase):
 
         # With final decorator
         with self.subTest("Subclass constructor"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @final
                 def __init__(self, a):
                     self.a = a
 
         with self.subTest("Subclass method"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @final
                 def final_method(self, a):
                     return a
 
         with self.subTest("Subclass property"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @final
                 @property
@@ -154,6 +163,7 @@ class TestFinals(unittest.TestCase):
                     return 5
 
         with self.subTest("Subclass classmethod"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @final
                 @classmethod
@@ -161,6 +171,7 @@ class TestFinals(unittest.TestCase):
                     return a
 
         with self.subTest("Subclass staticmethod"), self.assertRaises(RuntimeError):
+
             class Subclass(NonFinalClass):
                 @final
                 @staticmethod
@@ -170,6 +181,7 @@ class TestFinals(unittest.TestCase):
     def test_non_final_methods(self):
         # Without final decorator
         with self.subTest("Subclass non-final"):
+
             class SubclassNonFinal1(NonFinalClass):
                 def non_final_method(self, a):
                     return a + 1
@@ -232,6 +244,7 @@ class TestFinals(unittest.TestCase):
 
         # With final decorator
         with self.subTest("Subclass method"):
+
             class SubclassFinal(NonFinalClass):
                 @final
                 def non_final_method(self, a):
@@ -262,23 +275,27 @@ class TestFinals(unittest.TestCase):
 
             # Without final decorator
             with self.subTest("Subclass method"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     def non_final_method(self, a):
                         return a
 
             with self.subTest("Subclass property"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @property
                     def non_final_property(self):
                         return 5
 
             with self.subTest("Subclass classmethod"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @classmethod
                     def non_final_classmethod(cls, a):
                         return a
 
             with self.subTest("Subclass staticmethod"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @staticmethod
                     def non_final_staticmethod(a):
@@ -286,12 +303,14 @@ class TestFinals(unittest.TestCase):
 
             # With final decorator
             with self.subTest("Subclass method"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @final
                     def non_final_method(self, a):
                         return a
 
             with self.subTest("Subclass property"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @final
                     @property
@@ -299,6 +318,7 @@ class TestFinals(unittest.TestCase):
                         return 5
 
             with self.subTest("Subclass classmethod"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @final
                     @classmethod
@@ -306,6 +326,7 @@ class TestFinals(unittest.TestCase):
                         return a
 
             with self.subTest("Subclass staticmethod"), self.assertRaises(RuntimeError):
+
                 class SubclassFinal2(SubclassFinal):
                     @final
                     @staticmethod
@@ -332,12 +353,14 @@ class TestFinals(unittest.TestCase):
         self.assertEqual(10, cls.test)
 
         with self.assertRaises(RuntimeError):
+
             class FinalProperty2(FinalProperty):
                 @property
                 def test(self):
                     return self.a
 
         with self.assertRaises(RuntimeError):
+
             class FinalProperty2(FinalProperty):
                 @property
                 def test(self):

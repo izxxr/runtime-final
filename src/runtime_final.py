@@ -59,8 +59,13 @@ class _Final:
 
                 for name in final_methods:
                     # The class defines a method that was finalised in a different class
-                    if name in overrides and final_methods[name] != f"{cls.__module__}.{cls.__name__}":
-                        raise RuntimeError(f"Cannot override {name!r} in class {cls.__name__!r}")
+                    if (
+                        name in overrides
+                        and final_methods[name] != f"{cls.__module__}.{cls.__name__}"
+                    ):
+                        raise RuntimeError(
+                            f"Cannot override {name!r} in class {cls.__name__!r}"
+                        )
 
                 if old_init_subclass:
                     old_init_subclass()
@@ -82,6 +87,7 @@ class _Final:
 if TYPE_CHECKING:
     from typing import final
 else:
+
     def final(target) -> _Final:
         """A decorator that declares a class or method as final.
 
