@@ -1,10 +1,9 @@
 # amulet-runtime-final
 Declare final Python classes and methods at runtime.
 
-This module provides a decorator based interface to declare final
-classes and methods. This module is inspired by and is compatible with [`typing.final`](https://docs.python.org/3/library/typing.html#typing.final).
-See [PEP-591](https://www.python.org/dev/peps/pep-0591) for more
-details on this topic.
+This module provides a decorator based interface to declare final classes and methods that are enforced at runtime.
+This module is inspired by and is compatible with [`typing.final`](https://docs.python.org/3/library/typing.html#typing.final).
+See [PEP-591](https://www.python.org/dev/peps/pep-0591) for more details on this topic.
 
 ## Installation
 **Python 3.6 or higher is required.**
@@ -23,7 +22,6 @@ such:
 - Methods decorated with @final cannot be overriden in subclasses.
 
 For example with classes:
-
 ```py
 from runtime_final import final
 
@@ -34,16 +32,68 @@ class Foo:
 class Bar(Foo):  # Raises RuntimeError
     ...
 ```
+
 And with methods:
 ```py
 from runtime_final import final
 
-class User:
+class Foo:
     @final
-    def edit(self):
+    def foo(self):
         ...
 
-class AnotherUser(User):
-    def edit(self):  # Raises RuntimeError
+class Bar(Foo):
+    def foo(self):  # Raises RuntimeError
+        ...
+```
+
+And with other decorators:
+```py
+from runtime_final import final
+
+class Foo:
+    @final
+    @property
+    def foo(self):
+        ...
+    
+    @final
+    @staticmethod
+    def bar():
+        ...
+    
+    @final
+    @classmethod
+    def baz(cls):
+        ...
+
+class Bar(Foo):
+    @property
+    def foo(self):  # Raises RuntimeError
+        ...
+
+    @staticmethod
+    def bar():  # Raises RuntimeError
+        ...
+    
+    @classmethod
+    def baz(cls):  # Raises RuntimeError
+        ...
+```
+
+With property setters:
+```py
+from runtime_final import final
+
+class Foo:
+    @property
+    def foo(self):
+        ...
+    
+    # Note that the `final` decorator must only be applied to the last definition.
+    
+    @final
+    @foo.setter
+    def foo(self, foo):
         ...
 ```
