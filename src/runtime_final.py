@@ -29,6 +29,7 @@ from typing import (
     Dict,
 )
 import inspect
+from uuid import uuid4
 
 __version__ = "1.1.0"
 __author__ = "gentlegiantJGC and I. Ahmad (izxxr)"
@@ -49,7 +50,17 @@ class _Final:
             # If the class has not already been patched, patch it.
             # A dictionary mapping the name to the class it was finalised in. Dict[str, str]
             owner.__runtime_final_methods__ = {}
-            old_init_subclass = owner.__init_subclass__
+
+            # If we directly access __init_subclass__ now it will be bound to this class
+            # but it must be bound to whichever subclass it is used on.
+            try:
+                # If the class has defined this method it should be in here
+                init_subclass = owner.__dict__["__init_subclass__"]
+            except KeyError:
+                # If it does not exist then it is the built-in method
+                init_subclass = owner.__init_subclass__
+            old_init_subclass_name = f"__init_subclass_{uuid4()}__"
+            setattr(owner, old_init_subclass_name, init_subclass)
 
             def _forbid_overriding_finals(cls):
                 final_methods: Dict[str, str] = cls.__runtime_final_methods__
@@ -65,8 +76,8 @@ class _Final:
                             f"Cannot override {name!r} in class {cls.__name__!r}"
                         )
 
-                if old_init_subclass:
-                    old_init_subclass()
+                # Call the original init subclass method.
+                getattr(cls, old_init_subclass_name)()
 
             owner.__init_subclass__ = classmethod(_forbid_overriding_finals)
 

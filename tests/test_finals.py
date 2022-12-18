@@ -370,6 +370,37 @@ class TestFinals(unittest.TestCase):
                 def test(self, a):
                     self.a = a
 
+    def test_classmethod(self):
+        class Test:
+            @final
+            def test(self):
+                pass
+
+            @classmethod
+            def test2(cls, cls2):
+                self.assertIs(cls, cls2)
+
+        class Test2(Test):
+            @classmethod
+            def test2(cls, cls2):
+                super().test2(cls2)
+                self.assertIs(cls, cls2)
+
+        Test.test2(Test)
+        Test2.test2(Test2)
+
+    def test_init_subclass(self):
+        class Test:
+            @final
+            def test(self):
+                pass
+
+            def __init_subclass__(cls, **kwargs):
+                self.assertEqual("Test2", cls.__name__)
+
+        class Test2(Test):
+            pass
+
 
 if __name__ == "__main__":
     unittest.main()
