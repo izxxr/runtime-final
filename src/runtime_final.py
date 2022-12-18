@@ -31,7 +31,7 @@ from typing import (
 import inspect
 from uuid import uuid4
 
-__version__ = "1.1.1b1"
+__version__ = "1.1.1"
 __author__ = "gentlegiantJGC and I. Ahmad (izxxr)"
 __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 
