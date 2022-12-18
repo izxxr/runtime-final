@@ -35,7 +35,6 @@ __author__ = "gentlegiantJGC and I. Ahmad (izxxr)"
 __copyright__ = "Copyright (C) I. Ahmad 2022-2023 - Licensed under MIT."
 
 
-@classmethod
 def _forbid_subclassing(cls):
     raise RuntimeError(f"Cannot subclass the final class {cls.__name__!r}")
 
@@ -52,7 +51,6 @@ class _Final:
             owner.__runtime_final_methods__ = {}
             old_init_subclass = owner.__init_subclass__
 
-            @classmethod
             def _forbid_overriding_finals(cls):
                 final_methods: Dict[str, str] = cls.__runtime_final_methods__
                 overrides = vars(cls)
@@ -70,7 +68,7 @@ class _Final:
                 if old_init_subclass:
                     old_init_subclass()
 
-            owner.__init_subclass__ = _forbid_overriding_finals
+            owner.__init_subclass__ = classmethod(_forbid_overriding_finals)
 
         if name in owner.__runtime_final_methods__:
             # If the method has been finalised
@@ -158,7 +156,7 @@ else:
         """
         if inspect.isclass(target):
             target.__final__ = True
-            target.__init_subclass__ = _forbid_subclassing
+            target.__init_subclass__ = classmethod(_forbid_subclassing)
             return target
         elif inspect.isfunction(target):
             target.__final__ = True
